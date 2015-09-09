@@ -1,0 +1,306 @@
+Wave Version Information
+
+00.02.00 (12/08/14)
+- Enable Bluetooth plugin to request Bluetooth to be enabled if not enabled.
+  - If user selects "NO", then app will terminate.
+- Disabled buttons on main page before displaying to avoid lines when touched.
+- SW Download...
+    - Added logic to update version information after download complete.
+    - Added 2nd reset after download for CU and NU if version is 5.1.9 or earlier due to Ares update issue.
+    - Hardcode package information from Axeda due to Axeda issue.   
+        - CU and NU Ares cloud versions are hard coded to FF.FF.FF.
+        - CU and NU PIC and BT cloud versions are hard coded to FF.FF.
+        - Copy files to /download directory on Android to test.  Must have following names:
+            - WuExecutable.sec_FF.FF.FF
+            - CuExecutable.sec_FF.FF.FF
+            - CuPICFlashImg.bin_FF.FF
+            - NuPICFlashImg.bin_FF.FF
+            - BTFlashImg.bin_FF.FF
+            
+00.02.01 (12/11/14)
+- Updated bluetoothle.js for IOS.  IOS has a different discovery method than Android.
+
+
+00.02.02 (12/12/14)
+- Updated antenna settings to control the UART redirect correctly.
+- Changed navigator.notification.activityStart() to SpinnerStart() pluging since IOS
+  does not support activityStart().   
+- With the new spinner plugin the spinner can be fixed so they cannot be dismissed.
+- Turned off full screen since it did not work on IOS.   However, IOS 7 and greater
+  uses a transparent status bar so need additional logic for IOS 7 and greater.
+  
+00.02.03 (12/15/14) 
+- Updated antenna settings to control the UART redirect correctly, again.
+
+
+00.02.04 (12/17/14)
+- Add vertical scrolling to registration.
+- Hide status bar for IOS 7 and above.
+- Added phone to required registration data.
+- Added splash screen, www/splash.png.  Really a launch screen.
+- Added download egress acknowledgement.
+- Change to new SwVer numbering.
+  From Louis email on 12/17/14:
+    1)  For the PIC:
+        Read the version as XYZZ hex, show this as 700N040-MMM-NNN (or 700.040.MMM.NNN where only digits are allowed), where MMM = hex2dec(Y) and NNN = hex2dex(ZZ), X is masked off and ignored for this purpose.
+    2)  For BT:
+        Read the version as XXYY BCD, show this as 700N041-0XX-0YY (or 700.041.0XX.0YY where only digits are allowed).
+    3)  For Ares:
+        If the version number reads 0x00500A, change this to 0x005010 and proceed to the next step
+        Read the version as XXXYYY BCD, show this as 700N036-XXX-YYY (or 700.036.XXX.YYY where only digits are allowed).
+  
+00.02.05 (01/15/15)
+  - Performed 128-bit UUID compare at the app level since Android BTLE internally does not compare 128-bit UUID.
+    - This problem was discovered at a test lab with multiple 128-bit UUIDs and the app would connect to the first one found.
+    - Also discovered that IOS does not filter for the 128-bit ID which makes me think that this is a plugin issue.  Filed bug with plugin.
+    - Since IOS does not report the 128-bit IDs to the app I had to compare names, i.e. "Nextivity Bridge" for a match.
+  - Added text at bottom of display to show which Cel-Fi MN:SN that this phone is connected to.
+    - Had to add <meta name = "format-detection" content = "telephone=no"> to index.html to keep IOS from detecting the SN as a phone number.
+  - Corrected location of progress bar on registration screen.
+  - Changed progress bar text from "Cell Search Progress" to "Network Search Progress" to match NU LCD.
+
+
+00.02.06 (01/22/15)
+  - Tech mode heading within table.
+  - Tech mode spinner when selecting Next or Prev screen.
+  - Antenna selection disabled if Ext Ant not allowed, check AntennaStatus.  Bug 1169.
+  - No package available from cloud handled.  (isUpdateAvailable = false. need to test.)
+  - Upgraded to version 3.6.3 of Phonegap.
+  - Tried to upgrade to version 2.0.0 of Bluetooth LE plugin but had connect issues with IOS.
+    - Will up the BT version when Win comes out shortly. 
+  - TBD: Send bug to Rand for version 2.0.0.  On hold since cannot reproduce bug on Nexus.
+  - Add new app logos based on size.
+  - Remove default logo.
+  - Replaced "if(var == true)" with "if(var)".  Had an issue in download where using "== true" failed.
+  - Do not get cloud info if already registered.
+  - Do not pre-fill the registration data.   Do not want one user to see another's data.
+  
+   
+00.02.07 (01/24/15)
+  - Corrected tech mode timeout when no data available.
+
+
+00.02.08 (01/26/15)
+  - Corrected tech mode to clear Cell Detail when no data available.
+  
+  
+00.02.09 (01/27/15)
+  - IOS only: Do not change backgrounds based on registration status.   IOS does not scale
+    changing backgrounds on the fly.
+  - Reduced the size of the SW Update table.   Iphone did not have enough space to show
+    full table with the double spacing so reduced to single spacing.
+  - Shifted "SW Update" and "Tech Mode" headings slightly to the left.  IPhone display
+    was a bit crowed.
+  - Added "Connected to:" information on status line for error conditions such as no UNII.
+  - Changed Ares SW Version from 700.036.EDE.DED to 700.036.000.000.   Axeda custom object 
+    for SW Update can not handle non-numeric "EDE.DED".
+  - Modified the input form on registration.   On the Samsung Note it was partially hidden
+    by the header.  Tried using android:windowSoftInputMode="stateVisible" per the documentation
+    but this did not work so I modified my vertical scroll logic to place the form after the header.
+  - Added file system for IOS and enabled SW Update.  Selected Documents directory of app.  Should be visible in iTunes.:
+     Android file location:  Download directory: "file:///storage/emulated/0/Download/"
+     IOS file location:      App Documents dir:  "file:///var/mobile/Applications/App UUID/Documents/"
+                                                 "file:///var/mobile/Applications/90CD26F8-A9A6-4902-9E1A-EA43526130C7/Documents/"        
+  
+00.02.10 (01/28/15)
+  - IOS only: Advertisement data not found every scan on iPad IOS.  First verify advertisement data is present before matching.
+  
+  
+00.02.11 (01/30/15)
+  - Download: If a package is not there, the display shows “.N/A”. Removed the ‘.’.
+  - Download: If a package is incorrectly specified as 000.026, i.e. the XXX.YYY missing of XXX.YYY.000.026, then display 000.026.  
+  - Lock Bluetooth to a particular Cel-Fi once connected.   Must restart app to connect Bluetooth to a different Cel-Fi.
+  - Exit engineering mode on CU when exiting Tech mode on Wave app.  Works when using back key.   Killing app does not exit engr mode on CU.       
+   
+00.02.12 (02/04/15)
+  - Bug 1286: Ant display: Add popup "Please cycle power on the Network Unit in order for this change to take place."
+  - Bug 1287: Ant display: Add MHz to bd info.
+  - Store debug file locally: Android: Download directory, IOS: Documents directory (Caused issue with Bluetooth so not stored).
+  - Reg mode: Killed the "Verifying System Information" spinner when "Failed to receive response from cel-Fi device" due to NAKs. 
+  - Download mode:  Increased file download timeout from cloud from 12 to 24 sec. 
+  - Added better error messages at startup when unable to sync data.
+   
+       
+00.02.13 (02/xx/15)
+  - Allow Cell Info response, command response 0x43, to be binary.
+    - Allows the required additional data per cell, band and technology.
+    - Detect old JSON format as well for backward compatibility. 
+  - Registration:  Save user input locally if user hits back button.  Display user data if return to registration page.
+  - Check version of Phone software for Bluetooth plugin and Websocket.  (Android >= 4.4, IOS >= 7.1)
+  - Add check for state 4, "Please call provide", at startup.
+  - If no UNII, added "Exit" to Retry/Exit menu to exit program.
+  - If no cloud, added "Exit" to Retry/Exit menu to exit program.
+  - Add serial number to Axeda, SerialNumber:   xxxxxxxxx
+  - Add registration date to Axeda, RegDate:  xxxxxxxxx
+  - Add DeviceType to determine the phone type for Push notifications, DeviceType: xxxxx. IOS/Android
+  - Download improvements:
+    - Add a confirmation message at the start of download informing the user that the download should not be interrupted.
+    - Disable the back buttons so the user cannot cancel the download by navigating back to the main menu.
+    - End download if the Bluetooth connection is lost for more than 5 seconds.
+  - Convert freq, bd and tech to xArfcn and add to regDataToOp. (Thanks to HB for function.)
+  - Push implementation:
+    - Add Android functionality to register and receive Push Notifications.
+    - Add IOS functionality to register and receive Push Notifications.
+  - Add Websocket call to get 590 number from Nextivity server based on Unique ID.
+  - Changed "Cycle Power" text on Antenna menu per PR to only be displayed on entry into menu.
+  - Corrected check for software update when no files available.  Will now say "No software updates pending." instead of timing out.
+  - Added counter to text "Checking for updates...", now "Checking for updates...poll 1 of 60".
+  - Added alert if GPS location check times out: "Unable to acquire GPS.  No location information will be stored.". 
+  
+
+
+ 
+00.02.14 (03/09/15)
+  - Use production server instead of sandbox.
+  - Move geo-location check to successful registration so the lat-long coordinates only get sent to Axeda one time when registered.
+  - Download changes:
+    - Speed up download by factor of approx 2 to 3.
+    - If error downloading from cloud, note error in status field and move on to next file.  (Axeda egress error when downloading more than 2 packages).  
+    - If fail during Bluetooth transmission, slow down and offer retry.
+    - Send download stop first to make sure PIC state machine is reset.
+    
+
+00.02.15 (03/17/15)
+  - Set author name to "Nextivity" so the Play/App Store will say Nextivity instead of me.
+  - Download changes:  
+    - Reset egress flags when sending "isUpdateAvailable = true".  Old packages may be laying in egress queue.
+    - Added one auto retry to get file from cloud.
+    - Only send Download end when going to download page, not every start, so PIC can start from where it left off if retry.
+    - Only allow BT timeout if: 1) Not waiting on the user, 2) Not done and 3) Not waiting on a reset in the END_RSP state.
+    - Primary recover from download transfer timeout after 1 second by sending up to 11 sw version messages to resync. 
+    - Secondary recover from download error by going back to wait on user state and sending status messages to resync with PIC.
+  - Kill IOS app when home key pressed.
+  - Change "Check for Sw" key to "Check for Updates".
+
+
+
+00.02.16 (03/19/15)
+  - Cleaned button images, better font, cleaner corners.
+  - Registration:  After registration success, location dialog will return back to main menu.
+  - If Build ID is 0x05010009 or less then perfrom the 2nd reset.   Corrected build ID compare logic.
+  - Do not try to kill app if back or home button pressed, just minimize or go to background mode.  IOS app store may reject an app if it is killed programmatically.
+  - Antenna back button logic corrected.   Did not return correctly.
+  - Download: Continue to poll for egress messages until all packages come in.  The Axeda queue is set up for only 2 at a time.
+  - Disabled autolock at the beginning of download to keep phone from going to sleep.  Reenabled when exiting download menu. 
+  
+       
+00.02.17 (03/23/15)
+  - Issue:  After download and back key pressed, IOS would not allow tech mode data.
+    Solution:  Delay the return to main menu for 500 mS to allow autolock release callback to return before switching to main menu.
+  - After successful registration and location is asked for, wait until GPS location is determined before returning to main menu.
+  - Some downloads would cause unit to be reset twice as if 5_1_9 issue.  Problem was build version was being converted to 
+    string "0x0501000a" and string compared with "0x0501000A", i.e. little 'a' vs big 'A'.      
+     
+00.02.18 (03/25/15)
+  - Change ping rate from 3600 seconds to 0 per Axeda to flush egress queue quicker.
+  - Change "SW Update" header to "Updates" to match "Check for Updates" button. 
+     
+01.00.00 (03/25/15)
+  - Candidate release for app store and play store.
+  - Added icon.png, icon-57.png, icon-72.png and splash-568h@2x.png due to errors uploading to Apple.
+     
+01.00.01 (04/21/15)
+  - Do not display Antenna button if no antenna is available, SelParamReg/AntStatus returns ANT_STATUS_NO_EXT(0xFFFFFFFF)
+  - Change UNII Link Down message to: “Wireless Link Down”  “The wireless link between the Network Unit and Coverage Unit is down.  Please wait for the link to connect and try again.”
+  - Bug 1324: If UNII down NU version sent to cloud is bogus, 99.99.99.   If retry and UNII up, NU SW version is not sent to cloud since CU SW version already sent. 
+    - Fix by setting nxtySwVerCuCf to null so that the NU version gets updated.
+  - Bug 1325: Change get version order after download to NU, NU PIC, CU, CU PIC per HB email dated 4/9/15 so the CU PIC version is displayed correctly. 
+  - Added BT reconnect message to log to see when BT reconnects after SW Update and reset.   
+  - Ant selection: Remove “unused”, make sure all blank boxes have “-“           
+  - Hyperlink for privacy policy.  (Not necessary per JS 4/14/15).
+  - Tech mode:  Make sure all boxes have "-", hyphens.
+  - Tech mode:  Increased spinner timeout from 5 to 9 secs when changing pages.   
+  - Sw Update:  Change "N/A" text to "OK" text.
+  - Sw Update:  When update complete give indication.
+  - Sw Update:  Replace "Download" verbiage with "Update" verbiage to be consistent.   
+  - Use single background instead of switching for registered or unregistered.  (Will add product icons when new 590 numbering, 590NP/D, available.)
+  - Touch and explain icons.
+  - Increased file transfer from Axeda timeout from 24 to 60 seconds.  Waiting on Axeda to respond to ticket 116647.  One file required 40 seconds (per Ten).  
+   - Add Unii connection icon back in
+    - Main screen has 1 second timer to check UNII status so ICON is real time.
+    - Tech Mode screen has a 5 second timer to check UNII status so ICON is real time.
+    - Antenna screen has a 1 second timer to check UNII status so ICON is real time.
+    - Updates screen will only change ICON if downloading to NU and UNII link goes down. (Need to poll when not specifically downloading to Cel-Fi)
+    - Registration screen will change ICON if UNII link goes down during registration process.    (Need to poll when waiting to register.)
+    - Check UNII when pressing Ant or Reg buttons.
+
+01.00.02 (04/23/15)
+  - Remove UNII ICON and supporting functions, search for NO_U.   Moved to release 2.0.
+  - Add (S) for Sandbox or (P) for production to startup version screen.
+
+94.00.02 (for test)
+95.00.02 (for test)
+01.00.03 (05/08/15)
+  - Check SW version returned from NU or CU PIC.   If 0xFFFF, bad CRC, then set version to 000.000 to allow cloud to update.
+  - Check SW version returned from BT.   If 0xFFFF, empty flash, then set version to 000.000 to allow cloud to update.
+  - Privacy policy displayed, press screen (Nexus) or back (Samsung) policy dialog disappears and user must kill app.
+    - Corrected by catching the dismiss event and redisplaying the Privacy dialog.
+  - Main menu buttons span horizontally across display. 
+    - Corrected by changing CSS button class centerning technique from "margin-left/right: auto; width: 100%;" to "display: table; margin: 0 auto".
+  - Disable Update button if SW Back button is pressed.
+  - NAK during Sw Update.  Testing with conducted. TBD.
+  - NAK during NU SW Version.  
+    - Corrected recovery to wait 6 seconds after NAK instead of 6 seconds from last transmit.
+  - SW Update: Increase timeout from cloud to get packages from 2 to 3 minutes.
+  - PIC interface:  Handle NAK USB busy NAK error.  (PIC ver. 0x0228)
+  - Check Nu Software Ver at startup if UNII down.
+    - Corrected by adding back in a UNII status line in message handler which was removed for UNII ICON handling.
+  - SW Update:  NAK max.
+    - Increased timeout per NAK, instead of number of NAKs, to make sure that more than 5 seconds elapse to allow UNII redirect to timeout.
+  - Set regDataToOp to "No cell data found." if no cell data found.  Axeda has an issue if null data sent to cloud.
+  - Added logic to button down handler to remove orange outline when button held down (Android 4.x versions).
+  - Change USB conflict dialog to only appear once.
+  - Converted "RegDate" string from "Thu May 07 2015 08:22:43 GMT-0700 (PDT)" to "5/7/2015" to reduce the amount of data sent up.
+   
+   
+Issues:   
+  - Unable to get model number.
+  - Bluetooth connection problems.  (Suspect CU running in box causing problems.)
+  - Progress bar ends before cell search completes.  (Per logs operating as designed.)
+         
+          
+          
+                     
+   TBD:
+   - Auto retry for UNII down:
+     - 3 min timeout then message asking about retry.
+   - Language file: All text except tables.
+   - Add Unii connection icon back in
+    - Main screen has 1 second timer to check UNII status so ICON is real time.
+    - Tech Mode screen has a 5 second timer to check UNII status so ICON is real time.
+    - Antenna screen has a 1 second timer to check UNII status so ICON is real time.
+    - Updates screen will only change ICON if downloading to NU and UNII link goes down. (Need to poll when not specifically downloading to Cel-Fi)
+    - Registration screen will change ICON if UNII link goes down during registration process.    (Need to poll when waiting to register.)
+    - Add Confirm text to print log.
+   
+   
+   
+   Release notes:
+   - Make sure pointing to production platform and not sandbox.  Set CFG_RUN_ON_SANDBOX to false.
+   - Make sure to use IOS distribution key when building.
+   - Make sure print level is set to 1.
+   - Make sure js console is disabled in index.html
+   
+   
+
+   
+   TBD future....   
+   - Select Cel-Fi based on largest RSSI.
+   - Add country drop down list for registration and if Australia then ask for ID.
+   - Display multiple Cel-Fi devices and allow user to select.
+   - nxtyRxStatusHw changed to bytes [2] and [3].   Remove Rev.
+   - Progress bar could go on indefinitely if no cells can be found.
+     Normal termination occurs when cell search ends and RssiScan is detected but if poll does not
+     land in the RssiScan window then when cell search restarts progress bar follows...
+
+ 
+   
+   
+   IOS issues:
+   - Enable log file write for IOS.  (Problem with BT when FileWriter enabled.)
+ 
+
+   
+  
+
+           

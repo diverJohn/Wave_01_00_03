@@ -1,0 +1,65 @@
+Wave Version Information
+
+00.02.00 (12/08/14)
+- Enable Bluetooth plugin to request Bluetooth to be enabled if not enabled.
+  - If user selects "NO", then app will terminate.
+- Disabled buttons on main page before displaying to avoid lines when touched.
+- SW Download...
+    - Added logic to update version information after download complete.
+    - Added 2nd reset after download for CU and NU if version is 5.1.9 or earlier due to Ares update issue.
+    - Hardcode package information from Axeda due to Axeda issue.   
+        - CU and NU Ares cloud versions are hard coded to FF.FF.FF.
+        - CU and NU PIC and BT cloud versions are hard coded to FF.FF.
+        - Copy files to /download directory on Android to test.  Must have following names:
+            - WuExecutable.sec_FF.FF.FF
+            - CuExecutable.sec_FF.FF.FF
+            - CuPICFlashImg.bin_FF.FF
+            - NuPICFlashImg.bin_FF.FF
+            - BTFlashImg.bin_FF.FF
+            
+00.02.01 (12/11/14)
+- Updated bluetoothle.js for IOS.  IOS has a different discovery method than Android.
+
+
+00.02.02 (12/12/14)
+- Updated antenna settings to control the UART redirect correctly.
+- Changed navigator.notification.activityStart() to SpinnerStart() pluging since IOS
+  does not support activityStart().   
+- With the new spinner plugin the spinner can be fixed so they cannot be dismissed.
+- Turned off full screen since it did not work on IOS.   However, IOS 7 and greater
+  uses a transparent status bar so need additional logic for IOS 7 and greater.
+  
+00.02.03 (12/15/14) 
+- Updated antenna settings to control the UART redirect correctly, again.
+
+
+00.02.04 (12/17/14)
+- Add vertical scrolling to registration.
+- Hide status bar for IOS 7 and above.
+- Added phone to required registration data.
+- Added splash screen, www/splash.png.  Really a launch screen.
+- Added download egress acknowledgement.
+- Change to new SwVer numbering.
+  From Louis email on 12/17/14:
+    1)  For the PIC:
+        Read the version as XYZZ hex, show this as 700N040-MMM-NNN (or 700.040.MMM.NNN where only digits are allowed), where MMM = hex2dec(Y) and NNN = hex2dex(ZZ), X is masked off and ignored for this purpose.
+    2)  For BT:
+        Read the version as XXYY BCD, show this as 700N041-0XX-0YY (or 700.041.0XX.0YY where only digits are allowed).
+    3)  For Ares:
+        If the version number reads 0x00500A, change this to 0x005010 and proceed to the next step
+        Read the version as XXXYYY BCD, show this as 700N036-XXX-YYY (or 700.036.XXX.YYY where only digits are allowed).
+  
+00.02.05 (01/15/15)
+  - Performed 128-bit UUID compare at the app level since Android BTLE internally does not compare 128-bit UUID.
+    - This problem was discovered at a test lab with multiple 128-bit UUIDs and the app would connect to the first one found.
+    - Also discovered that IOS does not filter for the 128-bit ID which makes me think that this is a plugin issue.  Filed bug with plugin.
+    - Since IOS does not report the 128-bit IDs to the app I had to compare names, i.e. "Nextivity Bridge" for a match.
+  - Added text at bottom of display to show which Cel-Fi MN:SN that this phone is connected to.
+    - Had to add <meta name = "format-detection" content = "telephone=no"> to index.html to keep IOS from detecting the SN as a phone number.
+  - Corrected location of progress bar on registration screen.
+  - Changed progress bar text from "Cell Search Progress" to "Network Search Progress" to match NU LCD.
+
+
+
+
+           
